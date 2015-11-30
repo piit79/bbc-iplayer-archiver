@@ -1,29 +1,37 @@
-import httplib
 import lxml.html
+from pprint import pprint
+import iplayerconverter as ipc
 
 
-pid = 'b00ptsjd'
-host = 'www.bbc.co.uk'
-urlpath = '/programmes/%s/episodes/player' % pid
-url = 'http://' + host + urlpath
+# pid = 'b00ptsjd'
+pid = 'b03qkfxh'
+EPISODES_URL = 'http://www.bbc.co.uk/programmes/%s/episodes/player'
 
-print "Connecting to", host
-conn = httplib.HTTPConnection(host)
-print "Requesting", urlpath
-conn.request("GET", urlpath)
-res = conn.getresponse()
-if res.status != 200:
-    print "Error retrieving %s:" % url, res.status, res.reason
 
-data = res.read()
+def get_episodes(pid):
+    url = EPISODES_URL % pid
+    root = lxml.html.parse(url)
+    episodes = []
 
-print "Received", len(data), "bytes"
+    for div in root.findall('.//div/ol/li/div'):
+        episode = {}
+        episode['pid'] = div.get('data-pid')
+        episode['url'] = div.get('resource')
+        # span = div.findall('.//div/h4/a/span/span')[0]
+        # prog_name = span.text
+        metas = div.findall('.//div/div/div/a/meta')
+        for meta in metas:
+            prop = meta.get('property')
+            content = meta.get('content')
+            episode[prop] = content
+        pprint(episode)
+        episodes.append(episode)
 
-root = lxml.html.document_fromstring(data)
+    return episodes
 
-for div in root.findall('.//div/ol/li/div'):
-    span = div.findall('.//div/h4/a/span/span')[0]
-    prog_pid = div.get('data-pid')
-    prog_url = div.get('resource')
-    prog_name = span.text
-    print prog_pid, prog_url, prog_name
+
+eps = get_episodes(pid)
+
+for ep in eps:
+    rtmpcmd = ipc.pid2rtmpdump(ep['pid'])
+    print rtmpcmd
