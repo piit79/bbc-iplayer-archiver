@@ -5,6 +5,11 @@ CONVERT = '/convert.aspx?pid=%s'
 
 
 def pid2rtmpdump(pid):
+    """
+    Return rtmpdump command line to download the specified iPlayer episode.
+    :param pid: string
+    :rtype: string
+    """
     url = URL_BASE + CONVERT % pid
     root = lxml.html.parse(url)
     codes = root.findall('.//p/code')
