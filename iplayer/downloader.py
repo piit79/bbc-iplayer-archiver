@@ -14,6 +14,7 @@ def download(pid, directory=''):
     rtmp_cmd_str = converter.pid2rtmpdump(pid)
     if not rtmp_cmd_str:
         return False
+    rtmp_cmd_str = rtmp_cmd_str.translate(None, '"')
     rtmp_cmd = rtmp_cmd_str.split(' ')
     # prepend the directory to the output filename
     filename = rtmp_cmd[-1]
