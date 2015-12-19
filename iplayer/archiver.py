@@ -90,3 +90,5 @@ class IPlayerArchiver:
             for episode in episodes:
                 if not self.db.has_episode(episode):
                     self.download_episode(episode)
+                else:
+                    print "Episode %s - %s already downloaded" % (episode['pid'], episode['name'])
