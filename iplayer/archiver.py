@@ -60,8 +60,8 @@ class IPlayerArchiver:
         if not flv_path:
             print "Problem downloading episode %s!" % episode['pid']
             return False
-        m4a_filename = downloader.flv2m4a(flv_path)
-        if not m4a_filename:
+        m4a_path = downloader.flv2m4a(flv_path)
+        if not m4a_path:
             print "Problem converting episode %s to m4a!" % episode['pid']
             return False
         # download the thumbnail

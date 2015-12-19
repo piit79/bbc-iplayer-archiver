@@ -33,7 +33,7 @@ def download(pid, directory=''):
     if retcode > 0:
         os.remove(file_path)
         return False
-    return filename
+    return file_path
 
 
 def flv2m4a(path):
