@@ -46,7 +46,8 @@ class IPlayerArchiver:
 
         return sorted(episodes, key=lambda ep: ep['datePublished'])
 
-    def get_date_published(self, url):
+    @staticmethod
+    def get_date_published(url):
         root = lxml.html.parse(url)
         for div in root.findall('.//div[@property="datePublished"]'):
             date_published = div.get('content', False)
