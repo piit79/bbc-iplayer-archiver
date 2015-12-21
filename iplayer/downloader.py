@@ -11,7 +11,7 @@ def download_rtmp(pid, directory=''):
     :rtype: string|False
     :return:
     """
-    rtmp_cmd_str = converter.pid2rtmpdump(pid)
+    rtmp_cmd_str = converter.get_rtmpdump_cmd(pid)
     if not rtmp_cmd_str:
         return False
     rtmp_cmd_str = rtmp_cmd_str.translate(None, '"')

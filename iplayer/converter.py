@@ -6,7 +6,7 @@ CONVERT = "/convert.aspx?pid={0:s}"
 INFO = "/pid/{0:s}/default.aspx"
 
 
-def pid2rtmpdump(pid):
+def get_rtmpdump_cmd(pid):
     """
     Return rtmpdump command line to download the specified iPlayer episode.
     :param pid: string
