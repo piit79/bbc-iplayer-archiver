@@ -36,7 +36,7 @@ def download_rtmp(pid, directory=''):
     return file_path
 
 
-def flv2m4a(path):
+def remux_to_m4a(path):
     """
     Convert the given flv audio file to m4a.
     Only audio is converted, video is discarded.
