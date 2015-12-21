@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import iplayer.archiver as ipa
 from pprint import pprint
 
