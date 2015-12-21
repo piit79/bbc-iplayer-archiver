@@ -139,4 +139,4 @@ def remux_to_m4a(path, fix_aac=True):
     if retcode > 0:
         os.remove(path_out)
         return False
-    return filename_out
+    return path_out
