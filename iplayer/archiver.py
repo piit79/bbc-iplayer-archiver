@@ -56,7 +56,7 @@ class IPlayerArchiver:
     def download_episode(self, episode):
         print "Downloading episode %s" % episode['pid']
         destdir = os.path.join(self.storage_root, episode['programmePid'])
-        flv_path = downloader.download(episode['pid'], destdir)
+        flv_path = downloader.download_rtmp(episode['pid'], destdir)
         if not flv_path:
             print "Problem downloading episode %s!" % episode['pid']
             return False

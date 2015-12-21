@@ -3,9 +3,9 @@ import os
 import subprocess
 
 
-def download(pid, directory=''):
+def download_rtmp(pid, directory=''):
     """
-    Download an iPlayer episode to a specified directory.
+    Download an iPlayer episode using rtmpdump to a specified directory.
     :param pid: string
     :param directory: string
     :rtype: string|False
