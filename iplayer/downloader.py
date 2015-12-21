@@ -12,11 +12,11 @@ def download_rtmp(pid, directory=''):
     :param pid: string
     :param directory: string
     :rtype: string|False
-    :return:
     """
     rtmp_cmd_str = converter.get_rtmpdump_cmd(pid)
     if not rtmp_cmd_str:
         return False
+    # remove the quotes around the command line parameters
     rtmp_cmd_str = rtmp_cmd_str.translate(None, '"')
     rtmp_cmd = rtmp_cmd_str.split(' ')
     # prepend the directory to the output filename
@@ -113,21 +113,27 @@ def download_hls(pid, directory='', progress=False):
     return file_path
 
 
-def remux_to_m4a(path):
+def remux_to_m4a(path, fix_aac=True):
     """
     Convert the given flv audio file to m4a.
     Only audio is converted, video is discarded.
-    :param path: string
-    :rtype: string|False
+    :param path: string input file name
+    :param fix_aac: boolean whether to use a filter to fix the AAC bitstream
+    :rtype: string|False output file path
     """
-    # replace the extension with m4a
+    # replace current extension with m4a
     filename = os.path.basename(path)
     dirname = os.path.dirname(path)
-    fileparts = filename.split('.')
+    fileparts = filename.rsplit('.', 1)
     fileparts[-1] = "m4a"
     filename_out = '.'.join(fileparts)
+    # build the ffmpeg command line
     path_out = os.path.join(dirname, filename_out)
-    ffmpeg_cmd = ["ffmpeg", "-i", path, "-vn", "-acodec", "copy", path_out]
+    ffmpeg_cmd = ["ffmpeg", "-v", "error", "-i", path, "-vn", "-acodec", "copy"]
+    # add filter parameter to fix aac bitstream
+    if fix_aac:
+        ffmpeg_cmd.extend(["-bsf:a", "aac_adtstoasc"])
+    ffmpeg_cmd.append(path_out)
     retcode = subprocess.call(ffmpeg_cmd)
     # remove the file if the command failed
     if retcode > 0:
