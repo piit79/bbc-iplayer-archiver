@@ -8,7 +8,7 @@ import urllib
 
 class IPlayerArchiver:
 
-    EPISODES_URL = 'http://www.bbc.co.uk/programmes/%s/episodes/player'
+    EPISODES_URL = u'http://www.bbc.co.uk/programmes/{0:s}/episodes/player'
 
     def __init__(self, json_database, storage_root, programmes):
         self.db = episodedb.EpisodeDatabase(json_database)
@@ -16,10 +16,10 @@ class IPlayerArchiver:
         self.programmes = programmes
 
     def get_episodes(self, programme_pid):
-        url = IPlayerArchiver.EPISODES_URL % programme_pid
+        url = IPlayerArchiver.EPISODES_URL.format(programme_pid)
         root = lxml.html.parse(url)
         programme_name = ''
-        for el in root.findall(".//a[@href='/programmes/%s']" % programme_pid):
+        for el in root.findall(u".//a[@href='/programmes/{0:s}']".format(programme_pid)):
             programme_name = el.get('title')
             break
         episodes = []
@@ -54,15 +54,15 @@ class IPlayerArchiver:
         return False
 
     def download_episode(self, episode):
-        print "Downloading episode %s" % episode['pid']
+        print u"Downloading episode {0:s}".format(episode['pid'])
         destdir = os.path.join(self.storage_root, episode['programmePid'])
         flv_path = downloader.download_rtmp(episode['pid'], destdir)
         if not flv_path:
-            print "Problem downloading episode %s!" % episode['pid']
+            print u"Problem downloading episode {0:s}!".format(episode['pid'])
             return False
         m4a_path = downloader.remux_to_m4a(flv_path)
         if not m4a_path:
-            print "Problem converting episode %s to m4a!" % episode['pid']
+            print u"Problem converting episode {0:s} to m4a!".format(episode['pid'])
             return False
         # download the thumbnail
         thumbnail_ext = episode['thumbnailUrl'].split('.')[-1]
@@ -74,21 +74,21 @@ class IPlayerArchiver:
             with open(info_path, 'w') as fp:
                 json.dump(episode, fp, indent=4)
         except IOError as ex:
-            print "Cannot write info file %s: %s" % (info_path, ex)
+            print u"Cannot write info file {0:s}: {1:s}".format(info_path, ex)
             return False
         # update the episode database
         self.db.add_episode(episode)
 
     def run(self):
         for programme in self.programmes:
-            print "Getting episodes for programme %s..." % programme
+            print u"Getting episodes for programme {0:s}...".format(programme)
             episodes = self.get_episodes(programme)
             if len(episodes) < 1:
                 print "No episodes found."
                 continue
-            print "%s: %d episodes found" % (episodes[0]['programmeName'], len(episodes))
+            print u"{0:s}: {1:d} episodes found".format(episodes[0]['programmeName'], len(episodes))
             for episode in episodes:
                 if not self.db.has_episode(episode):
                     self.download_episode(episode)
                 else:
-                    print "Episode %s - %s already downloaded" % (episode['pid'], episode['name'])
+                    print u"Episode {0:s} - {1:s} already downloaded".format(episode['pid'], episode['name'])

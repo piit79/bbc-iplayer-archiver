@@ -25,7 +25,7 @@ def download_rtmp(pid, directory=''):
         try:
             os.makedirs(directory)
         except OSError as ex:
-            print "Could not create directory %s: %s" % (directory, ex)
+            print u"Could not create directory {0:s}: {1:s}".format(directory, ex)
             return False
     # launch the rtmpdump command
     retcode = subprocess.call(rtmp_cmd)
