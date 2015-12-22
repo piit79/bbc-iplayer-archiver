@@ -57,11 +57,11 @@ class IPlayerArchiver:
     def download_episode(self, episode):
         print u"Downloading episode {0:s}".format(episode['pid'])
         destdir = os.path.join(self.storage_root, episode['programmePid'])
-        flv_path = downloader.download_rtmp(episode['pid'], destdir)
-        if not flv_path:
+        raw_path = downloader.download_hls(episode['pid'], destdir)
+        if not raw_path:
             print u"Problem downloading episode {0:s}!".format(episode['pid'])
             return False
-        m4a_path = downloader.remux_to_m4a(flv_path)
+        m4a_path = downloader.remux_to_m4a(raw_path)
         if not m4a_path:
             print u"Problem converting episode {0:s} to m4a!".format(episode['pid'])
             return False
