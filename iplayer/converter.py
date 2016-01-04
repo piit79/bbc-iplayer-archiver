@@ -9,8 +9,8 @@ INFO = "/pid/{0:s}/default.aspx"
 def get_rtmpdump_cmd(pid):
     """
     Return rtmpdump command line to download the specified iPlayer episode.
-    :param pid: string
-    :rtype: string
+    :type pid: str
+    :rtype: str or False
     """
     url = URL_BASE + CONVERT.format(pid)
     root = lxml.html.parse(url)
@@ -28,8 +28,8 @@ def get_rtmpdump_cmd(pid):
 
 def get_pid_info(pid):
     """
-    Return pid info: vpid, aac link, hls playlist, wma link
-    :param pid: string
+    Return episode info: vpid, aac link, hls playlist link, wma link
+    :type pid: str
     :rtype: dict
     """
     url = URL_BASE + INFO.format(pid)

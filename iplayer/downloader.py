@@ -9,9 +9,11 @@ import urllib2
 def download_rtmp(pid, directory=''):
     """
     Download an iPlayer episode using rtmpdump to a specified directory.
-    :param pid: string
-    :param directory: string
-    :rtype: string|False
+    :type pid: str
+    :param directory: output directory; if empty current directory is used
+    :type directory: str or unicode
+    :returns: output file path
+    :rtype: str|False
     """
     rtmp_cmd_str = converter.get_rtmpdump_cmd(pid)
     if not rtmp_cmd_str:
@@ -42,10 +44,12 @@ def download_rtmp(pid, directory=''):
 def download_hls(pid, directory='', progress=False):
     """
     Download an iPlayer episode from a HLS stream to a specified directory
-    :param pid: string
-    :param directory: string
-    :param progress: boolean show a download progress
-    :rtype: string|false output file path
+    :type pid: str or unicode
+    :type directory: str or unicode
+    :param progress: show a download progress
+    :type progress: boolean show a download progress
+    :returns: output file path
+    :rtype: str|False
     """
     playlist_url = converter.get_pid_info(pid).get('hls', False)
     if not playlist_url:
@@ -117,9 +121,12 @@ def remux_to_m4a(path, fix_aac=True):
     """
     Convert the given flv audio file to m4a.
     Only audio is converted, video is discarded.
-    :param path: string input file name
-    :param fix_aac: boolean whether to use a filter to fix the AAC bitstream
-    :rtype: string|False output file path
+    :param path: input file path
+    :type path: str or unicode
+    :param fix_aac: whether to use a filter to fix the AAC bitstream
+    :type fix_aac: boolean
+    :returns: output file path
+    :rtype: str|False output file path
     """
     # replace current extension with m4a
     filename = os.path.basename(path)

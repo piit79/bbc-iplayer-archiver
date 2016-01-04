@@ -20,6 +20,11 @@ class EpisodeDatabase:
         return programme_pid in self.data
 
     def has_episode(self, episode):
+        """
+        Return True if the spedified episode exists in the database
+        :type episode: dict
+        :rtype: boolean
+        """
         programme_pid = episode['programmePid']
         episode_pid = episode['pid']
         if programme_pid not in self.data:
@@ -27,6 +32,11 @@ class EpisodeDatabase:
         return episode_pid in self.data[programme_pid]
 
     def add_episode(self, episode, autosave=True):
+        """
+        Add episode into the database
+        :type episode: dict
+        :type autosave: boolean
+        """
         programme_pid = episode['programmePid']
         episode_pid = episode['pid']
         # add programme if it doesn't exist yet
@@ -51,7 +61,8 @@ class EpisodeDatabase:
 
     def get(self):
         """
-        :return: dictionary representing the decoded JSON data
+        :returns: dictionary representing the decoded JSON data
+        :rtype: dict
         """
         return self.data
 

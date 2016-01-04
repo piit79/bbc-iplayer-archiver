@@ -83,6 +83,9 @@ class IPlayerArchiver:
         return self.db.add_episode(episode)
 
     def run(self):
+        """
+        Download all new episodes of all programmes
+        """
         for programme in self.programmes:
             print u"Getting episodes for programme {0:s}...".format(programme)
             episodes = self.get_episodes(programme)
