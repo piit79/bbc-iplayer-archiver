@@ -37,11 +37,17 @@ class EpisodeDatabase:
             self.save()
 
     def load(self):
+        """
+        Load the database from a json file
+        :returns: True if loaded successfully, False otherwise
+        :rtype: boolean
+        """
         try:
             with open(self.filename, 'r') as fp:
                 self.data = json.load(fp)
         except IOError:
-            pass
+            return False
+        return True
 
     def get(self):
         """
@@ -53,10 +59,17 @@ class EpisodeDatabase:
         self.data = data
 
     def save(self, data=None):
+        """
+        Save the database into a json file
+        :type data: dict
+        :returns: True if saved successfully, False otherwise
+        :rtype: boolean
+        """
         if data is not None:
             self.set(data)
         try:
             with open(self.filename, 'w') as fp:
                 json.dump(self.data, fp)
         except IOError:
-            pass
+            return False
+        return True
