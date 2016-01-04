@@ -33,7 +33,11 @@ def get_pid_info(pid):
     :rtype: dict
     """
     url = URL_BASE + INFO.format(pid)
-    fp = urllib2.urlopen(url)
+    try:
+        fp = urllib2.urlopen(url)
+    except urllib2.URLError as ex:
+        print u"Couldn't get info for pid {0:s}: {0:s}".format(pid, ex)
+        return {}
     info = {}
     for line in fp:
         if line[:4] == 'pid=':
