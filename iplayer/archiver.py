@@ -80,7 +80,7 @@ class IPlayerArchiver:
             print u"Cannot write info file {0:s}: {1:s}".format(info_path, ex)
             return False
         # update the episode database
-        self.db.add_episode(episode)
+        return self.db.add_episode(episode)
 
     def run(self):
         for programme in self.programmes:
