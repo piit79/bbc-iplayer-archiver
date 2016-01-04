@@ -65,6 +65,8 @@ class IPlayerArchiver:
         if not m4a_path:
             print u"Problem converting episode {0:s} to m4a!".format(episode['pid'])
             return False
+        m4a_filename = os.path.basename(m4a_path)
+        episode['fileName'] = m4a_filename
         # download the thumbnail
         thumbnail_ext = episode['thumbnailUrl'].split('.')[-1]
         thumbnail_path = os.path.join(destdir, episode['pid'] + '.' + thumbnail_ext)
