@@ -11,6 +11,14 @@ class EpisodeDatabase:
         self.data = {}
         self.load()
 
+    def has_programme(self, programme_pid):
+        """
+        Return True if the specified programme exists in the database
+        :type programme_pid: str or unicode
+        :rtype: boolean
+        """
+        return programme_pid in self.data
+
     def has_episode(self, episode):
         programme_pid = episode['programmePid']
         episode_pid = episode['pid']
@@ -21,7 +29,8 @@ class EpisodeDatabase:
     def add_episode(self, episode, autosave=True):
         programme_pid = episode['programmePid']
         episode_pid = episode['pid']
-        if programme_pid not in self.data:
+        # add programme if it doesn't exist yet
+        if not self.has_programme(programme_pid):
             self.data[programme_pid] = {}
         self.data[programme_pid][episode_pid] = episode
         if autosave:
