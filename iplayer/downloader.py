@@ -30,7 +30,7 @@ def download_rtmp(pid, directory=''):
         try:
             os.makedirs(directory)
         except OSError as ex:
-            print u"Could not create directory {0:s}: {1:s}".format(directory, ex)
+            print 'Could not create directory {0}: {1}'.format(directory, ex)
             return False
     # launch the rtmpdump command
     retcode = subprocess.call(rtmp_cmd)
@@ -60,16 +60,16 @@ def download_hls(pid, directory='', progress=False):
         try:
             os.makedirs(directory)
         except OSError as ex:
-            print u"Could not create directory {0:s}: {1:s}".format(directory, ex)
+            print 'Could not create directory {0}: {1}'.format(directory, ex)
             return False
 
     # open the output file
-    filename = pid + '.ts'
+    filename = '{0}.ts'.format(pid)
     file_path = os.path.join(directory, filename)
     try:
         ts_fp = open(file_path, 'w')
     except IOError as ex:
-        print u"Could not create output file {0:s}: {1:s}".format(file_path, ex)
+        print 'Could not create output file {0}: {1}'.format(file_path, ex)
         return False
 
     # get the m3u playlist URL
@@ -106,7 +106,7 @@ def download_hls(pid, directory='', progress=False):
         if 100.0 * cur_seg / num_seg >= cur_percent + step:
             cur_percent += step
             if progress:
-                print "{0:d}%".format(cur_percent),
+                print '{0:d}%'.format(cur_percent),
                 sys.stdout.flush()
         cur_seg += 1
     if progress:
@@ -132,14 +132,14 @@ def remux_to_m4a(path, fix_aac=True):
     filename = os.path.basename(path)
     dirname = os.path.dirname(path)
     fileparts = filename.rsplit('.', 1)
-    fileparts[-1] = "m4a"
+    fileparts[-1] = 'm4a'
     filename_out = '.'.join(fileparts)
     # build the ffmpeg command line
     path_out = os.path.join(dirname, filename_out)
-    ffmpeg_cmd = ["ffmpeg", "-v", "error", "-i", path, "-vn", "-acodec", "copy"]
+    ffmpeg_cmd = ['ffmpeg', '-v', 'error', '-i', path, '-vn', '-acodec', 'copy']
     # add filter parameter to fix aac bitstream
     if fix_aac:
-        ffmpeg_cmd.extend(["-bsf:a", "aac_adtstoasc"])
+        ffmpeg_cmd.extend(['-bsf:a', 'aac_adtstoasc'])
     ffmpeg_cmd.append(path_out)
     retcode = subprocess.call(ffmpeg_cmd)
     # remove the file if the command failed

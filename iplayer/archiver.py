@@ -8,7 +8,7 @@ import urllib
 
 class IPlayerArchiver:
 
-    EPISODES_URL = u'http://www.bbc.co.uk/programmes/{0:s}/episodes/player'
+    EPISODES_URL = 'http://www.bbc.co.uk/programmes/{0}/episodes/player'
 
     def __init__(self, json_database, storage_root, programmes):
         self.db = episodedb.EpisodeDatabase(json_database)
@@ -19,7 +19,7 @@ class IPlayerArchiver:
         url = IPlayerArchiver.EPISODES_URL.format(programme_pid)
         root = lxml.html.parse(url)
         programme_name = ''
-        for el in root.findall(u".//a[@href='/programmes/{0:s}']".format(programme_pid)):
+        for el in root.findall(".//a[@href='/programmes/{0}']".format(programme_pid)):
             programme_name = el.get('title')
             break
         episodes = []
@@ -55,15 +55,15 @@ class IPlayerArchiver:
         return False
 
     def download_episode(self, episode):
-        print u"Downloading episode {0:s}".format(episode['pid'])
+        print 'Downloading episode {0}'.format(episode['pid'])
         destdir = os.path.join(self.storage_root, episode['programmePid'])
         raw_path = downloader.download_hls(episode['pid'], destdir)
         if not raw_path:
-            print u"Problem downloading episode {0:s}!".format(episode['pid'])
+            print 'Problem downloading episode {0}!'.format(episode['pid'])
             return False
         m4a_path = downloader.remux_to_m4a(raw_path)
         if not m4a_path:
-            print u"Problem converting episode {0:s} to m4a!".format(episode['pid'])
+            print 'Problem converting episode {0} to m4a!'.format(episode['pid'])
             return False
         m4a_filename = os.path.basename(m4a_path)
         episode['fileName'] = m4a_filename
@@ -77,7 +77,7 @@ class IPlayerArchiver:
             with open(info_path, 'w') as fp:
                 json.dump(episode, fp, indent=4)
         except IOError as ex:
-            print u"Cannot write info file {0:s}: {1:s}".format(info_path, ex)
+            print 'Cannot write info file {0}: {1}'.format(info_path, ex)
             return False
         # update the episode database
         return self.db.add_episode(episode)
@@ -87,14 +87,14 @@ class IPlayerArchiver:
         Download all new episodes of all programmes
         """
         for programme in self.programmes:
-            print u"Getting episodes for programme {0:s}...".format(programme)
+            print 'Getting episodes for programme {0}...'.format(programme)
             episodes = self.get_episodes(programme)
             if len(episodes) < 1:
-                print "No episodes found."
+                print 'No episodes found.'
                 continue
-            print u"{0:s}: {1:d} episodes found".format(episodes[0]['programmeName'], len(episodes))
+            print '{0}: {1} episodes found'.format(episodes[0]['programmeName'], len(episodes))
             for episode in episodes:
                 if not self.db.has_episode(episode):
                     self.download_episode(episode)
                 else:
-                    print u"Episode {0:s} - {1:s} already downloaded".format(episode['pid'], episode['name'])
+                    print 'Episode {0} - {1} already downloaded'.format(episode['pid'], episode['name'])

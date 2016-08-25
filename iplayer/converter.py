@@ -2,8 +2,8 @@ import lxml.html
 import urllib2
 
 URL_BASE = 'http://www.iplayerconverter.co.uk'
-CONVERT = "/convert.aspx?pid={0:s}"
-INFO = "/pid/{0:s}/default.aspx"
+CONVERT = '/convert.aspx?pid={0}'
+INFO = '/pid/{0}/default.aspx'
 
 
 def get_rtmpdump_cmd(pid):
@@ -18,11 +18,10 @@ def get_rtmpdump_cmd(pid):
     if len(codes) == 1:
         return codes[0].text
     elif len(codes) < 1:
-        print "pid2rtmpdump: <p><code> not found!"
+        print 'pid2rtmpdump: <p><code> not found!'
         return False
     else:
-        print u"pid2rtmpdump: more than one <p><code> elements found: {0:d}" \
-            .format(len(codes))
+        print 'pid2rtmpdump: more than one <p><code> elements found: {0}'.format(len(codes))
         return False
 
 
@@ -36,7 +35,7 @@ def get_pid_info(pid):
     try:
         fp = urllib2.urlopen(url)
     except urllib2.URLError as ex:
-        print u"Couldn't get info for pid {0:s}: {0:s}".format(pid, ex)
+        print "Couldn't get info for pid {0}: {1}".format(pid, ex)
         return {}
     info = {}
     for line in fp:
