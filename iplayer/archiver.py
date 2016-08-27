@@ -1,17 +1,25 @@
 import downloader
-import episodedb
 import json
 import lxml.html
 import os
 import urllib
+from episodedb import EpisodeDatabaseAbstract
 
 
 class IPlayerArchiver:
 
     EPISODES_URL = 'http://www.bbc.co.uk/programmes/{0}/episodes/player'
 
-    def __init__(self, json_database, storage_root, programmes):
-        self.db = episodedb.EpisodeDatabase(json_database)
+    def __init__(self, database, storage_root, programmes):
+        """
+        :param database: episode database instance
+        :type database: EpisodeDatabaseAbstract
+        :param storage_root: filesystem root for episode storage
+        :type storage_root: str
+        :param programmes: list of programmes to archive
+        :type programmes: list
+        """
+        self.db = database
         self.storage_root = storage_root
         self.programmes = programmes
 
