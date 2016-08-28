@@ -24,11 +24,17 @@ class IPlayerArchiver:
         self.programmes = programmes
 
     def get_episodes(self, programme_pid):
+        """
+        Get the list of all available episodes for a programme
+        :type programme_pid: str or unicode
+        :return: list of dictionaries with episode data
+        :rtype: list
+        """
         url = IPlayerArchiver.EPISODES_URL.format(programme_pid)
         root = lxml.html.parse(url)
         programme_name = ''
         for el in root.findall(".//a[@href='/programmes/{0}']".format(programme_pid)):
-            programme_name = el.get('title')
+            programme_name = el.text
             break
         episodes = []
         for div in root.findall('.//div/ol/li/div'):
