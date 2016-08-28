@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import urllib2
+from urllib2 import HTTPError
 
 
 def download_rtmp(pid, directory=''):
@@ -75,7 +76,11 @@ def download_hls(pid, directory='', progress=False):
     # get the m3u playlist URL
     cj = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    res = opener.open(playlist_url)
+    try:
+        res = opener.open(playlist_url)
+    except HTTPError:
+        os.remove(file_path)
+        return False
     m3u_url = False
     for line in res:
         # skip comments
