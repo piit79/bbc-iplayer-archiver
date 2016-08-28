@@ -70,22 +70,20 @@ class IPlayerArchiver:
         return False
 
     def download_episode(self, episode):
-        print 'Downloading episode {0}'.format(episode['pid'])
+        print 'Downloading episode {0}: {1}'.format(episode['pid'], episode['name'])
         destdir = os.path.join(self.storage_root, episode['programmePid'])
-        raw_path = downloader.download_hls(episode['pid'], destdir)
-        if not raw_path:
-            print 'Problem downloading episode {0}!'.format(episode['pid'])
+        audio_path = downloader.download(episode['pid'], destdir)
+        if not audio_path:
+            print 'Problem downloading episode {0:s}'.format(episode['pid'])
             return False
-        m4a_path = downloader.remux_to_m4a(raw_path)
-        if not m4a_path:
-            print 'Problem converting episode {0} to m4a!'.format(episode['pid'])
-            return False
-        m4a_filename = os.path.basename(m4a_path)
-        episode['fileName'] = m4a_filename
+        audio_filename = os.path.basename(audio_path)
+        episode['fileName'] = audio_filename
+
         # download the thumbnail
         thumbnail_ext = episode['thumbnailUrl'].split('.')[-1]
         thumbnail_path = os.path.join(destdir, episode['pid'] + '.' + thumbnail_ext)
         urllib.urlretrieve(episode['thumbnailUrl'], thumbnail_path)
+
         # write the info json file
         info_path = os.path.join(destdir, episode['pid'] + '.json')
         try:
@@ -94,6 +92,7 @@ class IPlayerArchiver:
         except IOError as ex:
             print 'Cannot write info file {0}: {1}'.format(info_path, ex)
             return False
+
         # update the episode database
         return self.db.add_episode(episode)
 
@@ -112,4 +111,4 @@ class IPlayerArchiver:
                 if not self.db.has_episode(episode):
                     self.download_episode(episode)
                 else:
-                    print 'Episode {0} - {1} already downloaded'.format(episode['pid'], episode['name'])
+                    print 'Episode {0}: {1} already downloaded'.format(episode['pid'], episode['name'])

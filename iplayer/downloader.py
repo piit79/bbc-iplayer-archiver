@@ -7,32 +7,64 @@ import urllib2
 from urllib2 import HTTPError
 
 
-def download_rtmp(pid, directory=''):
+def download(pid, directory=''):
     """
-    Download an iPlayer episode using rtmpdump to a specified directory.
-    :type pid: str
-    :param directory: output directory; if empty current directory is used
+    Download an episode
+    :type pid: str or unicode
+    :param directory: destination directory
     :type directory: str or unicode
-    :returns: output file path
+    :param mode: download mode: MODE_RTMP or MODE_HLS
+    :type mode: str
+    :return: output file path or False on failure
     :rtype: str|False
     """
-    rtmp_cmd_str = converter.get_rtmpdump_cmd(pid)
-    if not rtmp_cmd_str:
-        return False
-    # remove the quotes around the command line parameters
-    rtmp_cmd_str = rtmp_cmd_str.translate(None, '"')
-    rtmp_cmd = rtmp_cmd_str.split(' ')
-    # prepend the directory to the output filename
-    filename = rtmp_cmd[-1]
-    file_path = os.path.join(directory, filename)
-    rtmp_cmd[-1] = file_path
-    # create the directory if needed
+    # create the output directory if needed
     if directory != '' and not os.path.isdir(directory):
         try:
             os.makedirs(directory)
         except OSError as ex:
             print 'Could not create directory {0}: {1}'.format(directory, ex)
             return False
+
+    # try HLS first, then RTMP if it fails
+    file_path = download_hls(pid, directory)
+    if not file_path:
+        file_path = download_rtmp(pid, directory)
+
+    if not file_path:
+        return False
+
+    # remux the audio file to M4A
+    m4a_path = remux_to_m4a(file_path)
+    if not m4a_path:
+        print 'Problem converting episode {0} to m4a!'.format(pid)
+        return False
+
+    return m4a_path
+
+
+def download_rtmp(pid, directory=''):
+    """
+    Download an iPlayer episode using rtmpdump to a specified directory.
+    :type pid: str
+    :param directory: output directory; if empty current directory is used
+    :type directory: str or unicode
+    :return: output file path or False on failure
+    :rtype: str|False
+    """
+    rtmp_cmd_str = converter.get_rtmpdump_cmd(pid)
+    if not rtmp_cmd_str:
+        return False
+
+    # remove the quotes around the command line parameters
+    rtmp_cmd_str = rtmp_cmd_str.translate(None, '"')
+    rtmp_cmd = rtmp_cmd_str.split(' ')
+
+    # prepend the directory to the output filename
+    filename = rtmp_cmd[-1]
+    file_path = os.path.join(directory, filename)
+    rtmp_cmd[-1] = file_path
+
     # launch the rtmpdump command
     with open(os.devnull, 'w') as fnull:
         retcode = subprocess.call(rtmp_cmd, stdout=fnull, stderr=fnull)
@@ -41,6 +73,7 @@ def download_rtmp(pid, directory=''):
     if retcode > 0:
         os.remove(file_path)
         return False
+
     return file_path
 
 
@@ -48,23 +81,16 @@ def download_hls(pid, directory='', progress=False):
     """
     Download an iPlayer episode from a HLS stream to a specified directory
     :type pid: str or unicode
+    :param directory: directory to store the downloaded episode in
     :type directory: str or unicode
     :param progress: show a download progress
-    :type progress: boolean show a download progress
+    :type progress: bool
     :returns: output file path
-    :rtype: str|False
+    :rtype: str or False
     """
     playlist_url = converter.get_pid_info(pid).get('hls', False)
     if not playlist_url:
         return False
-
-    # create the directory if needed
-    if directory != '' and not os.path.isdir(directory):
-        try:
-            os.makedirs(directory)
-        except OSError as ex:
-            print 'Could not create directory {0}: {1}'.format(directory, ex)
-            return False
 
     # open the output file
     filename = '{0}.ts'.format(pid)
@@ -98,6 +124,7 @@ def download_hls(pid, directory='', progress=False):
     res = opener.open(m3u_url)
     segments = []
     for line in res:
+        # skip commented out lines
         if line.lstrip()[:1] == '#':
             continue
         segments.append(line.strip())
@@ -121,6 +148,7 @@ def download_hls(pid, directory='', progress=False):
             print '100%'
         else:
             print ''
+
     return file_path
 
 
