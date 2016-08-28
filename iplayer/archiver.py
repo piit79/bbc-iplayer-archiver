@@ -56,8 +56,6 @@ class IPlayerArchiver:
                 prop = meta.get('property')
                 content = meta.get('content')
                 episode[prop] = content
-            date_published = self.get_date_published(episode_url)
-            episode['datePublished'] = date_published
             episode['programmePid'] = programme_pid
             episodes.append(episode)
 
