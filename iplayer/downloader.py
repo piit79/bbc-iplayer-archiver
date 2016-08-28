@@ -34,7 +34,9 @@ def download_rtmp(pid, directory=''):
             print 'Could not create directory {0}: {1}'.format(directory, ex)
             return False
     # launch the rtmpdump command
-    retcode = subprocess.call(rtmp_cmd)
+    with open(os.devnull, 'w') as fnull:
+        retcode = subprocess.call(rtmp_cmd, stdout=fnull, stderr=fnull)
+
     # remove the file if the command failed
     if retcode > 0:
         os.remove(file_path)
