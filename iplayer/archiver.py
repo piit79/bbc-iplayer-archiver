@@ -8,7 +8,8 @@ from episodedb import EpisodeDatabaseAbstract
 
 class IPlayerArchiver:
 
-    EPISODES_URL = 'http://www.bbc.co.uk/programmes/{0}/episodes/player'
+    # URL for the available episodes of a programme
+    EPISODES_URL = 'http://www.bbc.co.uk/programmes/{pid}/episodes/player'
 
     def __init__(self, database, storage_root, programmes):
         """
@@ -30,7 +31,7 @@ class IPlayerArchiver:
         :return: list of dictionaries with episode data
         :rtype: list
         """
-        url = IPlayerArchiver.EPISODES_URL.format(programme_pid)
+        url = IPlayerArchiver.EPISODES_URL.format(pid=programme_pid)
         root = lxml.html.parse(url)
         programme_name = ''
         for el in root.findall(".//a[@href='/programmes/{0}']".format(programme_pid)):
