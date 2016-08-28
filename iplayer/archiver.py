@@ -39,8 +39,10 @@ class IPlayerArchiver:
             break
         episodes = []
         for div in root.findall('.//div/ol/li/div'):
-            episode_pid = div.get('data-pid')
-            episode_url = div.get('resource')
+            episode_pid = div.get('data-pid', False)
+            episode_url = div.get('resource', False)
+            if not episode_pid or not episode_url:
+                continue
             # skip "podcast" episodes (pid starts with a 'p')
             if episode_pid[0] == 'p':
                 continue
